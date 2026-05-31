@@ -5,232 +5,171 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scripting Reference — Gunther</title>
 <style>
-:root {
-  --bg: #0d0f14;
-  --surface: #13161d;
-  --surface2: #1a1e28;
-  --border: #252a38;
-  --accent: #4f9eff;
-  --accent2: #ff6b35;
-  --bash: #4f9eff;
-  --ps: #a78bfa;
-  --compare: #34d399;
-  --text: #e2e8f0;
-  --muted: #64748b;
-  --code-bg: #0a0c10;
-  --sidebar-w: 260px;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  display: flex;
-  min-height: 100vh;
-  font-size: 15px;
-  line-height: 1.6;
-}
-#sidebar {
-  width: var(--sidebar-w);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  overflow-y: auto;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-}
-#sidebar::-webkit-scrollbar { width: 4px; }
-#sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.sidebar-logo { padding: 24px 20px 16px; border-bottom: 1px solid var(--border); }
-.sidebar-logo .brand { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-.sidebar-logo h1 { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.2; }
-.sidebar-logo h1 span { color: var(--accent); }
-.search-wrap { padding: 14px 16px; border-bottom: 1px solid var(--border); }
-#search {
-  width: 100%; background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; padding: 8px 12px; color: var(--text);
-  font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; outline: none; transition: border-color 0.2s;
-}
-#search:focus { border-color: var(--accent); }
-#search::placeholder { color: var(--muted); }
-.tab-buttons { display: flex; padding: 12px 16px 0; border-bottom: 1px solid var(--border); }
-.tab-btn {
-  flex: 1; padding: 6px 4px; border: none; background: transparent; color: var(--muted);
-  font-family: 'Segoe UI', system-ui, sans-serif; font-size: 11px; font-weight: 700;
-  letter-spacing: 0.05em; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; text-transform: uppercase;
-}
-.tab-btn:hover { color: var(--text); }
-.tab-btn.active[data-tab="bash"] { color: var(--bash); border-color: var(--bash); }
-.tab-btn.active[data-tab="ps"] { color: var(--ps); border-color: var(--ps); }
-.tab-btn.active[data-tab="compare"] { color: var(--compare); border-color: var(--compare); }
-.tab-btn.active[data-tab="all"] { color: var(--accent2); border-color: var(--accent2); }
-.nav-section { padding: 12px 0 4px; }
-.nav-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); padding: 0 20px 6px; font-weight: 700; }
-.nav-link {
-  display: block; padding: 7px 20px; color: var(--muted); text-decoration: none;
-  font-size: 13px; font-weight: 600; transition: all 0.15s; border-left: 2px solid transparent; cursor: pointer;
-}
-.nav-link:hover { color: var(--text); background: var(--surface2); }
-.nav-link[data-lang="bash"].active { color: var(--text); border-left-color: var(--bash); background: rgba(79,158,255,0.07); }
-.nav-link[data-lang="ps"].active { color: var(--text); border-left-color: var(--ps); background: rgba(167,139,250,0.07); }
-.nav-link[data-lang="compare"].active { color: var(--text); border-left-color: var(--compare); background: rgba(52,211,153,0.07); }
-#main { margin-left: var(--sidebar-w); flex: 1; max-width: 860px; padding: 48px 48px 100px; }
-.section { margin-bottom: 64px; scroll-margin-top: 32px; }
-.section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.lang-badge { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
-.lang-badge.bash { background: rgba(79,158,255,0.15); color: var(--bash); }
-.lang-badge.ps { background: rgba(167,139,250,0.15); color: var(--ps); }
-.lang-badge.compare { background: rgba(52,211,153,0.15); color: var(--compare); }
-.section-title { font-size: 22px; font-weight: 800; color: var(--text); }
-.subsection { margin-bottom: 28px; }
-.subsection h3 { font-size: 14px; font-weight: 700; color: var(--accent2); margin-bottom: 10px; letter-spacing: 0.05em; text-transform: uppercase; }
-p { color: #94a3b8; margin-bottom: 10px; font-size: 14px; }
-.tip { background: rgba(79,158,255,0.08); border-left: 3px solid var(--bash); padding: 10px 14px; border-radius: 0 6px 6px 0; color: #93c5fd; font-size: 13px; margin: 10px 0; }
-.tip.warn { background: rgba(255,107,53,0.08); border-color: var(--accent2); color: #fdba74; }
-.tip.ps-tip { background: rgba(167,139,250,0.08); border-color: var(--ps); color: #c4b5fd; }
-.code-wrap { position: relative; margin: 10px 0; }
-pre {
-  background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
-  padding: 16px 20px; overflow-x: auto; font-family: 'Consolas', 'Courier New', monospace;
-  font-size: 13px; line-height: 1.7; color: #e2e8f0;
-}
-.c { color: var(--muted); font-style: italic; }
-.k { color: #f472b6; }
-.s { color: #86efac; }
-.v { color: #93c5fd; }
-.f { color: #fbbf24; }
-.copy-btn {
-  position: absolute; top: 8px; right: 8px; background: var(--surface2);
-  border: 1px solid var(--border); color: var(--muted); padding: 4px 10px;
-  border-radius: 5px; font-family: 'Consolas', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s;
-}
-.copy-btn:hover { color: var(--text); border-color: var(--accent); }
-.copy-btn.copied { color: #34d399; border-color: #34d399; }
-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 13px; }
-th { text-align: left; padding: 8px 12px; background: var(--surface2); color: var(--muted); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid var(--border); }
-td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: #94a3b8; font-family: 'Consolas', 'Courier New', monospace; }
-td:first-child { color: var(--text); }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 12px 0; }
-.compare-col-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
-.compare-col-label.bash { color: var(--bash); }
-.compare-col-label.ps { color: var(--ps); }
-.hidden { display: none !important; }
-#no-results { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; }
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+:root{--bg:#0d0f14;--sur:#13161d;--sur2:#1a1e28;--bdr:#252a38;--acc:#4f9eff;--acc2:#ff6b35;--bash:#4f9eff;--ps:#a78bfa;--cmp:#34d399;--txt:#e2e8f0;--mut:#64748b;--cbg:#0a0c10}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--txt);display:flex;min-height:100vh;font-size:15px;line-height:1.6}
+#sb{width:260px;background:var(--sur);border-right:1px solid var(--bdr);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column}
+#sb::-webkit-scrollbar{width:4px}
+#sb::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:2px}
+.logo{padding:24px 20px 16px;border-bottom:1px solid var(--bdr)}
+.logo .brand{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:4px}
+.logo h1{font-size:18px;font-weight:800;color:var(--txt)}
+.logo h1 span{color:var(--acc)}
+.sw{padding:14px 16px;border-bottom:1px solid var(--bdr)}
+#srch{width:100%;background:var(--sur2);border:1px solid var(--bdr);border-radius:8px;padding:8px 12px;color:var(--txt);font-family:'Consolas',monospace;font-size:12px;outline:none}
+#srch:focus{border-color:var(--acc)}
+#srch::placeholder{color:var(--mut)}
+.tabs{display:flex;padding:12px 16px 0;border-bottom:1px solid var(--bdr)}
+.tb{flex:1;padding:6px 4px;border:none;background:transparent;color:var(--mut);font-size:11px;font-weight:700;letter-spacing:.05em;cursor:pointer;border-bottom:2px solid transparent;text-transform:uppercase}
+.tb:hover{color:var(--txt)}
+.tb.on[data-t="all"]{color:var(--acc2);border-color:var(--acc2)}
+.tb.on[data-t="bash"]{color:var(--bash);border-color:var(--bash)}
+.tb.on[data-t="ps"]{color:var(--ps);border-color:var(--ps)}
+.tb.on[data-t="cmp"]{color:var(--cmp);border-color:var(--cmp)}
+#nav{flex:1}
+.ng{padding:12px 0 4px}
+.nl{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--mut);padding:0 20px 6px;font-weight:700}
+.na{display:block;padding:7px 20px;color:var(--mut);font-size:13px;font-weight:600;border-left:2px solid transparent;cursor:pointer}
+.na:hover{color:var(--txt);background:var(--sur2)}
+.na.on[data-l="bash"]{color:var(--txt);border-color:var(--bash);background:rgba(79,158,255,.07)}
+.na.on[data-l="ps"]{color:var(--txt);border-color:var(--ps);background:rgba(167,139,250,.07)}
+.na.on[data-l="cmp"]{color:var(--txt);border-color:var(--cmp);background:rgba(52,211,153,.07)}
+#main{margin-left:260px;flex:1;max-width:860px;padding:48px 48px 100px}
+.sec{margin-bottom:64px;scroll-margin-top:32px}
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--bdr)}
+.badge{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.badge.bash{background:rgba(79,158,255,.15);color:var(--bash)}
+.badge.ps{background:rgba(167,139,250,.15);color:var(--ps)}
+.badge.cmp{background:rgba(52,211,153,.15);color:var(--cmp)}
+.st{font-size:22px;font-weight:800;color:var(--txt)}
+.sub{margin-bottom:28px}
+.sub h3{font-size:14px;font-weight:700;color:var(--acc2);margin-bottom:10px;letter-spacing:.05em;text-transform:uppercase}
+p{color:#94a3b8;margin-bottom:10px;font-size:14px}
+.tip{background:rgba(79,158,255,.08);border-left:3px solid var(--bash);padding:10px 14px;border-radius:0 6px 6px 0;color:#93c5fd;font-size:13px;margin:10px 0}
+.tip.w{background:rgba(255,107,53,.08);border-color:var(--acc2);color:#fdba74}
+.tip.p{background:rgba(167,139,250,.08);border-color:var(--ps);color:#c4b5fd}
+.cw{position:relative;margin:10px 0}
+pre{background:var(--cbg);border:1px solid var(--bdr);border-radius:8px;padding:16px 20px;overflow-x:auto;font-family:'Consolas','Courier New',monospace;font-size:13px;line-height:1.7;color:#e2e8f0;white-space:pre}
+.c{color:var(--mut);font-style:italic}
+.k{color:#f472b6}
+.s{color:#86efac}
+.v{color:#93c5fd}
+.f{color:#fbbf24}
+.cp{position:absolute;top:8px;right:8px;background:var(--sur2);border:1px solid var(--bdr);color:var(--mut);padding:4px 10px;border-radius:5px;font-family:'Consolas',monospace;font-size:11px;cursor:pointer}
+.cp:hover{color:var(--txt);border-color:var(--acc)}
+.cp.ok{color:#34d399;border-color:#34d399}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13px}
+th{text-align:left;padding:8px 12px;background:var(--sur2);color:var(--mut);font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;border-bottom:1px solid var(--bdr)}
+td{padding:8px 12px;border-bottom:1px solid var(--bdr);color:#94a3b8;font-family:'Consolas','Courier New',monospace}
+td:first-child{color:var(--txt)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.cl{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.cl.bash{color:var(--bash)}
+.cl.ps{color:var(--ps)}
+.hidden{display:none!important}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px}
 </style>
 </head>
 <body>
-
-<nav id="sidebar">
-  <div class="sidebar-logo">
+<nav id="sb">
+  <div class="logo">
     <div class="brand">scripting.ref</div>
     <h1>Bash &amp; <span>PS</span> Guide</h1>
   </div>
-  <div class="search-wrap">
-    <input type="text" id="search" placeholder="Zoek een commando..." autocomplete="off">
+  <div class="sw"><input type="text" id="srch" placeholder="Zoek een commando..."></div>
+  <div class="tabs">
+    <button class="tb on" data-t="all">Alles</button>
+    <button class="tb" data-t="bash">Bash</button>
+    <button class="tb" data-t="ps">PS</button>
+    <button class="tb" data-t="cmp">&#8800;</button>
   </div>
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="all">Alles</button>
-    <button class="tab-btn" data-tab="bash">Bash</button>
-    <button class="tab-btn" data-tab="ps">PS</button>
-    <button class="tab-btn" data-tab="compare">&#8800;</button>
-  </div>
-  <div id="nav-links"></div>
+  <div id="nav"></div>
 </nav>
 
 <main id="main">
-  <div id="content"></div>
-  <div id="no-results" class="hidden">Geen resultaten gevonden.</div>
-</main>
 
-<!-- SECTION DATA — hidden templates -->
-<div id="section-data" style="display:none">
-
-<section data-id="bash-basics" data-lang="bash" data-title="Basics &amp; Shebang">
-<div class="subsection"><h3>Shebang</h3>
+<div class="sec" id="bash-basics" data-lang="bash" data-title="Basics &amp; Shebang">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Basics &amp; Shebang</h2></div>
+<div class="sub"><h3>Shebang</h3>
 <p>Vertelt het systeem welke interpreter het script uitvoert. Moet op de allereerste regel staan.</p>
-<div class="code-wrap"><pre><span class="c">#!/bin/bash</span>
+<div class="cw"><pre><span class="c">#!/bin/bash</span>
 <span class="c"># Dit is commentaar</span>
-<span class="k">echo</span> <span class="s">"Hallo wereld"</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">echo</span> <span class="s">"Hallo wereld"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Script uitvoeren</h3>
-<div class="code-wrap"><pre><span class="f">chmod</span> +x script.sh        <span class="c"># uitvoerrechten geven</span>
+<div class="sub"><h3>Script uitvoeren</h3>
+<div class="cw"><pre><span class="f">chmod</span> +x script.sh        <span class="c"># uitvoerrechten geven</span>
 ./script.sh               <span class="c"># script uitvoeren</span>
 <span class="f">bash</span> script.sh            <span class="c"># ook geldig, zonder chmod</span>
-<span class="f">bash</span> -x script.sh         <span class="c"># debug modus</span></pre><button class="copy-btn">copy</button></div>
+<span class="f">bash</span> -x script.sh         <span class="c"># debug modus</span></pre><button class="cp">copy</button></div>
 <table><tr><th>Commando</th><th>Uitleg</th></tr>
-<tr><td>chmod +x bestand</td><td>Geeft uitvoerrechten</td></tr>
+<tr><td>chmod +x bestand</td><td>Uitvoerrechten geven</td></tr>
 <tr><td>which bash</td><td>Pad naar bash interpreter</td></tr>
 <tr><td>bash --version</td><td>Versie van bash</td></tr>
-<tr><td>cat /etc/shells</td><td>Beschikbare shells op het systeem</td></tr></table>
-</div>
-</section>
+<tr><td>cat /etc/shells</td><td>Beschikbare shells</td></tr></table>
+</div></div>
 
-<section data-id="bash-variabelen" data-lang="bash" data-title="Variabelen">
-<div class="subsection"><h3>Declareren &amp; gebruiken</h3>
+<div class="sec" id="bash-variabelen" data-lang="bash" data-title="Variabelen">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Variabelen</h2></div>
+<div class="sub"><h3>Declareren &amp; gebruiken</h3>
 <p>Toekennen zonder $, uitlezen met $. Geen spaties rond het = teken.</p>
-<div class="code-wrap"><pre><span class="v">naam</span>=<span class="s">"Gunther"</span>
+<div class="cw"><pre><span class="v">naam</span>=<span class="s">"Gunther"</span>
 <span class="v">leeftijd</span>=20
 <span class="k">echo</span> <span class="s">"Hallo $naam"</span>
-<span class="k">echo</span> <span class="s">"Je bent ${leeftijd} jaar oud"</span></pre><button class="copy-btn">copy</button></div>
-<div class="tip">Gebruik altijd quotes: <code>"$var"</code> i.p.v. <code>$var</code> — zo vermijd je problemen met spaties.</div>
+<span class="k">echo</span> <span class="s">"Je bent ${leeftijd} jaar oud"</span></pre><button class="cp">copy</button></div>
+<div class="tip">Gebruik altijd quotes: "$var" i.p.v. $var — zo vermijd je problemen met spaties.</div>
 </div>
-<div class="subsection"><h3>Command substitutie</h3>
-<div class="code-wrap"><pre><span class="v">gebruiker</span>=$(<span class="f">whoami</span>)
+<div class="sub"><h3>Command substitutie</h3>
+<div class="cw"><pre><span class="v">gebruiker</span>=$(<span class="f">whoami</span>)
 <span class="v">datum</span>=$(<span class="f">date</span>)
-<span class="k">echo</span> <span class="s">"Ingelogd als: $gebruiker"</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">echo</span> <span class="s">"Ingelogd als: $gebruiker"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Argumenten ($1, $2 ...)</h3>
-<div class="code-wrap"><pre><span class="c"># ./script.sh Alice 25</span>
+<div class="sub"><h3>Argumenten</h3>
+<div class="cw"><pre><span class="c"># ./script.sh Alice 25</span>
 <span class="k">echo</span> <span class="s">"Naam: $1"</span>        <span class="c"># eerste argument</span>
 <span class="k">echo</span> <span class="s">"Leeftijd: $2"</span>    <span class="c"># tweede argument</span>
-<span class="k">echo</span> <span class="s">"Aantal args: $#"</span> <span class="c"># aantal argumenten</span>
-<span class="k">echo</span> <span class="s">"Alle args: $@"</span>   <span class="c"># alle argumenten</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">echo</span> <span class="s">"Aantal: $#"</span>      <span class="c"># aantal argumenten</span>
+<span class="k">echo</span> <span class="s">"Alle: $@"</span>        <span class="c"># alle argumenten</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Arrays</h3>
-<div class="code-wrap"><pre><span class="v">kleuren</span>=(<span class="s">"rood"</span> <span class="s">"groen"</span> <span class="s">"blauw"</span>)
-<span class="k">echo</span> <span class="s">"${kleuren[0]}"</span>       <span class="c"># rood</span>
-<span class="k">echo</span> <span class="s">"${#kleuren[@]}"</span>     <span class="c"># aantal elementen: 3</span>
-<span class="k">echo</span> <span class="s">"${kleuren[@]}"</span>      <span class="c"># alle elementen</span>
+<div class="sub"><h3>Arrays</h3>
+<div class="cw"><pre><span class="v">kleuren</span>=(<span class="s">"rood"</span> <span class="s">"groen"</span> <span class="s">"blauw"</span>)
+<span class="k">echo</span> "${kleuren[0]}"       <span class="c"># rood</span>
+<span class="k">echo</span> "${#kleuren[@]}"      <span class="c"># aantal: 3</span>
+<span class="k">echo</span> "${kleuren[@]}"       <span class="c"># alle elementen</span>
 <span class="v">kleuren</span>+=(<span class="s">"geel"</span>)
-<span class="k">for</span> kleur <span class="k">in</span> <span class="s">"${kleuren[@]}"</span>; <span class="k">do</span>
-    <span class="k">echo</span> <span class="s">"$kleur"</span>
-<span class="k">done</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="k">for</span> k <span class="k">in</span> "${kleuren[@]}"; <span class="k">do</span> <span class="k">echo</span> "$k"; <span class="k">done</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="bash-input-output" data-lang="bash" data-title="Input &amp; Output">
-<div class="subsection"><h3>Output tonen</h3>
-<div class="code-wrap"><pre><span class="k">echo</span> <span class="s">"Gewone tekst"</span>
+<div class="sec" id="bash-io" data-lang="bash" data-title="Input &amp; Output">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Input &amp; Output</h2></div>
+<div class="sub"><h3>Output</h3>
+<div class="cw"><pre><span class="k">echo</span> <span class="s">"Gewone tekst"</span>
 <span class="k">echo</span> -n <span class="s">"Zonder newline"</span>
 <span class="k">echo</span> -e <span class="s">"Lijn 1\nLijn 2"</span>
-<span class="f">printf</span> <span class="s">"Naam: %s, Leeftijd: %d\n"</span> <span class="s">"Ali"</span> 22</pre><button class="copy-btn">copy</button></div>
+<span class="f">printf</span> <span class="s">"Naam: %s\n"</span> <span class="s">"Ali"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Input lezen</h3>
-<div class="code-wrap"><pre><span class="k">read</span> antwoord
-<span class="k">read</span> -p <span class="s">"Wat is je naam? "</span> naam
+<div class="sub"><h3>Input lezen</h3>
+<div class="cw"><pre><span class="k">read</span> antwoord
+<span class="k">read</span> -p <span class="s">"Naam? "</span> naam
 <span class="k">read</span> -s -p <span class="s">"Wachtwoord: "</span> ww
-<span class="k">read</span> -t 10 -p <span class="s">"Snel! "</span> keuze         <span class="c"># timeout 10s</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="k">read</span> -t 10 -p <span class="s">"Snel! "</span> keuze</pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="bash-conditionals" data-lang="bash" data-title="Conditionals">
-<div class="subsection"><h3>if / elif / else</h3>
-<div class="code-wrap"><pre><span class="k">if</span> [ <span class="s">"$naam"</span> = <span class="s">"Gunther"</span> ]; <span class="k">then</span>
+<div class="sec" id="bash-cond" data-lang="bash" data-title="Conditionals">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Conditionals</h2></div>
+<div class="sub"><h3>if / elif / else</h3>
+<div class="cw"><pre><span class="k">if</span> [ "$naam" = <span class="s">"Gunther"</span> ]; <span class="k">then</span>
     <span class="k">echo</span> <span class="s">"Hallo Gunther!"</span>
-<span class="k">elif</span> [ <span class="s">"$naam"</span> = <span class="s">"admin"</span> ]; <span class="k">then</span>
+<span class="k">elif</span> [ "$naam" = <span class="s">"admin"</span> ]; <span class="k">then</span>
     <span class="k">echo</span> <span class="s">"Beheerder"</span>
 <span class="k">else</span>
     <span class="k">echo</span> <span class="s">"Onbekend"</span>
-<span class="k">fi</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">fi</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Vergelijkingsoperatoren</h3>
+<div class="sub"><h3>Vergelijkingsoperatoren</h3>
 <table><tr><th>Operator</th><th>Strings</th><th>Getallen</th></tr>
 <tr><td>=</td><td>Gelijk</td><td>—</td></tr>
 <tr><td>!=</td><td>Niet gelijk</td><td>—</td></tr>
@@ -241,174 +180,158 @@ tr:hover td { background: rgba(255,255,255,0.02); }
 <tr><td>-le</td><td>—</td><td>Kleiner of gelijk</td></tr>
 <tr><td>-ge</td><td>—</td><td>Groter of gelijk</td></tr></table>
 </div>
-<div class="subsection"><h3>Bestandstests</h3>
-<div class="code-wrap"><pre><span class="k">if</span> [ -f <span class="s">"/etc/passwd"</span> ]; <span class="k">then</span>
-    <span class="k">echo</span> <span class="s">"Bestand bestaat"</span>
-<span class="k">fi</span></pre><button class="copy-btn">copy</button></div>
+<div class="sub"><h3>Bestandstests</h3>
 <table><tr><th>Vlag</th><th>Betekenis</th></tr>
 <tr><td>-f bestand</td><td>Bestaat en is een bestand</td></tr>
 <tr><td>-d pad</td><td>Bestaat en is een map</td></tr>
-<tr><td>-e pad</td><td>Bestaat (bestand of map)</td></tr>
+<tr><td>-e pad</td><td>Bestaat</td></tr>
 <tr><td>-r bestand</td><td>Leesbaar</td></tr>
 <tr><td>-w bestand</td><td>Schrijfbaar</td></tr>
 <tr><td>-x bestand</td><td>Uitvoerbaar</td></tr>
 <tr><td>-z "$var"</td><td>String is leeg</td></tr>
 <tr><td>-n "$var"</td><td>String is niet leeg</td></tr></table>
 </div>
-<div class="subsection"><h3>case statement</h3>
-<div class="code-wrap"><pre><span class="k">case</span> <span class="s">"$keuze"</span> <span class="k">in</span>
+<div class="sub"><h3>case statement</h3>
+<div class="cw"><pre><span class="k">case</span> "$keuze" <span class="k">in</span>
     1) <span class="k">echo</span> <span class="s">"Optie 1"</span> ;;
     2) <span class="k">echo</span> <span class="s">"Optie 2"</span> ;;
     q|Q) <span class="k">echo</span> <span class="s">"Afsluiten"</span> ;;
     *) <span class="k">echo</span> <span class="s">"Ongeldig"</span> ;;
-<span class="k">esac</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="k">esac</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="bash-loops" data-lang="bash" data-title="Loops">
-<div class="subsection"><h3>for loop</h3>
-<div class="code-wrap"><pre><span class="k">for</span> fruit <span class="k">in</span> appel peer banaan; <span class="k">do</span>
-    <span class="k">echo</span> <span class="s">"Fruit: $fruit"</span>
+<div class="sec" id="bash-loops" data-lang="bash" data-title="Loops">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Loops</h2></div>
+<div class="sub"><h3>for loop</h3>
+<div class="cw"><pre><span class="k">for</span> fruit <span class="k">in</span> appel peer banaan; <span class="k">do</span>
+    <span class="k">echo</span> <span class="s">"$fruit"</span>
 <span class="k">done</span>
 
 <span class="k">for</span> (( i=1; i&lt;=5; i++ )); <span class="k">do</span>
     <span class="k">echo</span> <span class="s">"Ronde $i"</span>
 <span class="k">done</span>
 
-<span class="k">for</span> bestand <span class="k">in</span> /etc/*.conf; <span class="k">do</span>
-    <span class="k">echo</span> <span class="s">"$bestand"</span>
-<span class="k">done</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">for</span> f <span class="k">in</span> /etc/*.conf; <span class="k">do</span> <span class="k">echo</span> "$f"; <span class="k">done</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>while loop</h3>
-<div class="code-wrap"><pre><span class="v">teller</span>=0
+<div class="sub"><h3>while loop</h3>
+<div class="cw"><pre><span class="v">teller</span>=0
 <span class="k">while</span> [ $teller -lt 5 ]; <span class="k">do</span>
     <span class="k">echo</span> <span class="s">"Teller: $teller"</span>
     (( teller++ ))
 <span class="k">done</span>
 
 <span class="k">while true</span>; <span class="k">do</span>
-    <span class="k">read</span> -p <span class="s">"Doorgaan? (j/n) "</span> antw
-    [ <span class="s">"$antw"</span> = <span class="s">"n"</span> ] &amp;&amp; <span class="k">break</span>
-<span class="k">done</span></pre><button class="copy-btn">copy</button></div>
-<table><tr><th>Keyword</th><th>Uitleg</th></tr>
-<tr><td>break</td><td>Verlaat de loop onmiddellijk</td></tr>
-<tr><td>continue</td><td>Sla rest van iteratie over</td></tr></table>
-</div>
-</section>
+    <span class="k">read</span> -p <span class="s">"(j/n)? "</span> a
+    [ "$a" = <span class="s">"n"</span> ] &amp;&amp; <span class="k">break</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="bash-functies" data-lang="bash" data-title="Functies">
-<div class="subsection"><h3>Definiëren &amp; aanroepen</h3>
-<div class="code-wrap"><pre><span class="f">begroet</span>() {
+<div class="sec" id="bash-func" data-lang="bash" data-title="Functies">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Functies</h2></div>
+<div class="sub"><h3>Definiëren &amp; aanroepen</h3>
+<div class="cw"><pre><span class="f">begroet</span>() {
     <span class="k">echo</span> <span class="s">"Hallo, $1!"</span>
 }
-<span class="f">begroet</span> <span class="s">"Gunther"</span></pre><button class="copy-btn">copy</button></div>
+<span class="f">begroet</span> <span class="s">"Gunther"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Returnwaarde via echo</h3>
-<div class="code-wrap"><pre><span class="f">kwadraat</span>() {
+<div class="sub"><h3>Returnwaarde via echo</h3>
+<div class="cw"><pre><span class="f">kwadraat</span>() {
     <span class="k">echo</span> $(( $1 * $1 ))
 }
 <span class="v">result</span>=$(<span class="f">kwadraat</span> 5)
-<span class="k">echo</span> <span class="s">"5^2 = $result"</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">echo</span> <span class="s">"5^2 = $result"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Exitcode in functie</h3>
-<div class="code-wrap"><pre><span class="f">check_bestand</span>() {
-    <span class="k">if</span> [ -f <span class="s">"$1"</span> ]; <span class="k">then</span>
-        <span class="k">return</span> 0
-    <span class="k">else</span>
-        <span class="k">return</span> 1
-    <span class="k">fi</span>
+<div class="sub"><h3>Exitcode in functie</h3>
+<div class="cw"><pre><span class="f">check</span>() {
+    [ -f "$1" ] &amp;&amp; <span class="k">return</span> 0 || <span class="k">return</span> 1
 }
-<span class="f">check_bestand</span> <span class="s">"/etc/passwd"</span> &amp;&amp; <span class="k">echo</span> <span class="s">"Bestaat!"</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="f">check</span> <span class="s">"/etc/passwd"</span> &amp;&amp; <span class="k">echo</span> <span class="s">"Bestaat!"</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="bash-bestanden" data-lang="bash" data-title="Bestanden &amp; Mappen">
-<div class="subsection"><h3>Veelgebruikte commando's</h3>
+<div class="sec" id="bash-files" data-lang="bash" data-title="Bestanden &amp; Mappen">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Bestanden &amp; Mappen</h2></div>
+<div class="sub"><h3>Veelgebruikte commando's</h3>
 <table><tr><th>Commando</th><th>Uitleg</th></tr>
-<tr><td>ls -la</td><td>Alle bestanden incl. verborgen, met details</td></tr>
+<tr><td>ls -la</td><td>Alle bestanden incl. verborgen</td></tr>
 <tr><td>cd /pad</td><td>Navigeer naar map</td></tr>
-<tr><td>pwd</td><td>Huidig pad tonen</td></tr>
+<tr><td>pwd</td><td>Huidig pad</td></tr>
 <tr><td>mkdir -p map/sub</td><td>Map aanmaken (incl. tussenliggende)</td></tr>
 <tr><td>rm -rf map</td><td>Map en inhoud verwijderen</td></tr>
 <tr><td>cp -r bron doel</td><td>Kopiëren (recursief)</td></tr>
-<tr><td>mv oud nieuw</td><td>Verplaatsen of hernoemen</td></tr>
+<tr><td>mv oud nieuw</td><td>Verplaatsen/hernoemen</td></tr>
 <tr><td>cat bestand</td><td>Inhoud tonen</td></tr>
 <tr><td>head -n 5 bestand</td><td>Eerste 5 regels</td></tr>
 <tr><td>tail -n 5 bestand</td><td>Laatste 5 regels</td></tr>
-<tr><td>wc -l bestand</td><td>Aantal regels tellen</td></tr>
-<tr><td>find / -name "*.sh"</td><td>Bestanden zoeken op naam</td></tr></table>
+<tr><td>wc -l bestand</td><td>Regels tellen</td></tr>
+<tr><td>find / -name "*.sh"</td><td>Zoeken op naam</td></tr></table>
 </div>
-<div class="subsection"><h3>Permissies</h3>
-<div class="code-wrap"><pre><span class="f">chmod</span> 755 script.sh   <span class="c"># rwxr-xr-x</span>
+<div class="sub"><h3>Permissies</h3>
+<div class="cw"><pre><span class="f">chmod</span> 755 script.sh   <span class="c"># rwxr-xr-x</span>
 <span class="f">chmod</span> 644 bestand     <span class="c"># rw-r--r--</span>
 <span class="f">chmod</span> +x script.sh    <span class="c"># uitvoerbaar maken</span>
-<span class="f">chown</span> user:groep bestand
-<span class="f">ls</span> -la                <span class="c"># permissies bekijken</span></pre><button class="copy-btn">copy</button></div>
+<span class="f">chown</span> user:groep bestand</pre><button class="cp">copy</button></div>
 <div class="tip">r=4, w=2, x=1 — dus 755 = rwx(7) r-x(5) r-x(5)</div>
-</div>
-</section>
+</div></div>
 
-<section data-id="bash-pipes" data-lang="bash" data-title="Pipes &amp; Redirectie">
-<div class="subsection"><h3>Pipes</h3>
-<div class="code-wrap"><pre><span class="f">ls</span> /etc | <span class="f">grep</span> <span class="s">"conf"</span>
+<div class="sec" id="bash-pipes" data-lang="bash" data-title="Pipes &amp; Redirectie">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Pipes &amp; Redirectie</h2></div>
+<div class="sub"><h3>Pipes</h3>
+<div class="cw"><pre><span class="f">ls</span> /etc | <span class="f">grep</span> <span class="s">"conf"</span>
 <span class="f">cat</span> bestand.txt | <span class="f">wc</span> -l
 <span class="f">ps</span> aux | <span class="f">grep</span> <span class="s">"nginx"</span>
-<span class="f">cat</span> log.txt | <span class="f">grep</span> -i <span class="s">"error"</span> | <span class="f">wc</span> -l</pre><button class="copy-btn">copy</button></div>
+<span class="f">cat</span> log.txt | <span class="f">grep</span> -i <span class="s">"error"</span> | <span class="f">wc</span> -l</pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Redirectie</h3>
-<div class="code-wrap"><pre><span class="k">echo</span> <span class="s">"tekst"</span> &gt; bestand.txt       <span class="c"># overschrijven</span>
-<span class="k">echo</span> <span class="s">"meer"</span> &gt;&gt; bestand.txt       <span class="c"># toevoegen</span>
-commando 2&gt; fout.log              <span class="c"># stderr opslaan</span>
-commando &gt; /dev/null 2&gt;&amp;1        <span class="c"># alles weggooien</span></pre><button class="copy-btn">copy</button></div>
+<div class="sub"><h3>Redirectie</h3>
+<div class="cw"><pre><span class="k">echo</span> <span class="s">"tekst"</span> &gt; bestand.txt
+<span class="k">echo</span> <span class="s">"meer"</span> &gt;&gt; bestand.txt
+commando 2&gt; fout.log
+commando &gt; /dev/null 2&gt;&amp;1</pre><button class="cp">copy</button></div>
 <table><tr><th>Operator</th><th>Uitleg</th></tr>
 <tr><td>&gt;</td><td>Stdout naar bestand (overschrijft)</td></tr>
 <tr><td>&gt;&gt;</td><td>Stdout naar bestand (voegt toe)</td></tr>
 <tr><td>2&gt;</td><td>Stderr naar bestand</td></tr>
 <tr><td>2&gt;&amp;1</td><td>Stderr samenvoegen met stdout</td></tr>
 <tr><td>|</td><td>Stdout links naar stdin rechts</td></tr></table>
-</div>
-</section>
+</div></div>
 
-<section data-id="bash-strings" data-lang="bash" data-title="Strings &amp; Rekenwerk">
-<div class="subsection"><h3>Rekenwerk</h3>
-<div class="code-wrap"><pre><span class="v">a</span>=10; <span class="v">b</span>=3
-<span class="k">echo</span> $(( a + b ))     <span class="c"># 13</span>
-<span class="k">echo</span> $(( a * b ))     <span class="c"># 30</span>
-<span class="k">echo</span> $(( a / b ))     <span class="c"># 3  (gehele deling)</span>
-<span class="k">echo</span> $(( a % b ))     <span class="c"># 1  (rest)</span>
-(( a++ ))              <span class="c"># increment</span></pre><button class="copy-btn">copy</button></div>
+<div class="sec" id="bash-str" data-lang="bash" data-title="Strings &amp; Rekenwerk">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Strings &amp; Rekenwerk</h2></div>
+<div class="sub"><h3>Rekenwerk</h3>
+<div class="cw"><pre><span class="v">a</span>=10; <span class="v">b</span>=3
+<span class="k">echo</span> $(( a + b ))   <span class="c"># 13</span>
+<span class="k">echo</span> $(( a * b ))   <span class="c"># 30</span>
+<span class="k">echo</span> $(( a / b ))   <span class="c"># 3 (gehele deling)</span>
+<span class="k">echo</span> $(( a % b ))   <span class="c"># 1 (rest)</span>
+(( a++ ))            <span class="c"># increment</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Stringmanipulatie</h3>
-<div class="code-wrap"><pre><span class="v">tekst</span>=<span class="s">"Hallo Wereld"</span>
-<span class="k">echo</span> ${#tekst}           <span class="c"># lengte: 12</span>
-<span class="k">echo</span> ${tekst,,}          <span class="c"># kleine letters</span>
-<span class="k">echo</span> ${tekst^^}          <span class="c"># hoofdletters</span>
-<span class="k">echo</span> ${tekst:0:5}        <span class="c"># substring: "Hallo"</span>
-<span class="k">echo</span> ${tekst/Hallo/Dag}  <span class="c"># vervangen</span></pre><button class="copy-btn">copy</button></div>
+<div class="sub"><h3>Stringmanipulatie</h3>
+<div class="cw"><pre><span class="v">t</span>=<span class="s">"Hallo Wereld"</span>
+<span class="k">echo</span> ${#t}          <span class="c"># lengte: 12</span>
+<span class="k">echo</span> ${t,,}         <span class="c"># kleine letters</span>
+<span class="k">echo</span> ${t^^}         <span class="c"># hoofdletters</span>
+<span class="k">echo</span> ${t:0:5}       <span class="c"># substring: "Hallo"</span>
+<span class="k">echo</span> ${t/Hallo/Dag} <span class="c"># vervangen</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>grep &amp; regex</h3>
-<div class="code-wrap"><pre><span class="f">grep</span> <span class="s">"patroon"</span> bestand.txt       <span class="c"># basis zoeken</span>
-<span class="f">grep</span> -i <span class="s">"patroon"</span> bestand.txt    <span class="c"># hoofdletterongevoelig</span>
-<span class="f">grep</span> -r <span class="s">"patroon"</span> /map/          <span class="c"># recursief</span>
-<span class="f">grep</span> -E <span class="s">"[0-9]+"</span> bestand.txt    <span class="c"># extended regex</span>
-<span class="f">grep</span> -v <span class="s">"patroon"</span> bestand.txt    <span class="c"># NIET matchende regels</span>
-<span class="f">grep</span> -c <span class="s">"patroon"</span> bestand.txt    <span class="c"># tel matches</span>
-<span class="f">grep</span> -n <span class="s">"patroon"</span> bestand.txt    <span class="c"># toon regelnummers</span></pre><button class="copy-btn">copy</button></div>
+<div class="sub"><h3>grep</h3>
+<div class="cw"><pre><span class="f">grep</span> <span class="s">"patroon"</span> bestand.txt
+<span class="f">grep</span> -i <span class="s">"patroon"</span> bestand.txt  <span class="c"># hoofdletterongevoelig</span>
+<span class="f">grep</span> -r <span class="s">"patroon"</span> /map/        <span class="c"># recursief</span>
+<span class="f">grep</span> -E <span class="s">"[0-9]+"</span> bestand.txt  <span class="c"># extended regex</span>
+<span class="f">grep</span> -v <span class="s">"patroon"</span> bestand.txt  <span class="c"># niet-matchende regels</span>
+<span class="f">grep</span> -n <span class="s">"patroon"</span> bestand.txt  <span class="c"># met regelnummers</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>sed &amp; awk</h3>
-<div class="code-wrap"><pre><span class="f">sed</span> <span class="s">'s/oud/nieuw/g'</span> bestand.txt       <span class="c"># vervang tekst</span>
-<span class="f">sed</span> -i <span class="s">'s/oud/nieuw/g'</span> bestand.txt    <span class="c"># in-place</span>
-<span class="f">sed</span> -n <span class="s">'5,10p'</span> bestand.txt            <span class="c"># regels 5-10</span>
+<div class="sub"><h3>sed &amp; awk</h3>
+<div class="cw"><pre><span class="f">sed</span> <span class="s">'s/oud/nieuw/g'</span> bestand.txt
+<span class="f">sed</span> -i <span class="s">'s/oud/nieuw/g'</span> bestand.txt  <span class="c"># in-place</span>
+<span class="f">awk</span> <span class="s">'{print $1}'</span> bestand.txt        <span class="c"># eerste kolom</span>
+<span class="f">awk</span> -F: <span class="s">'{print $1}'</span> /etc/passwd    <span class="c"># scheidingsteken ':'</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<span class="f">awk</span> <span class="s">'{print $1}'</span> bestand.txt          <span class="c"># eerste kolom</span>
-<span class="f">awk</span> -F: <span class="s">'{print $1}'</span> /etc/passwd      <span class="c"># scheidingsteken ':'</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
-
-<section data-id="bash-exitcodes" data-lang="bash" data-title="Exit Codes">
-<div class="subsection"><h3>Exitcodes gebruiken</h3>
+<div class="sec" id="bash-exit" data-lang="bash" data-title="Exit Codes">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Exit Codes</h2></div>
+<div class="sub"><h3>Exitcodes gebruiken</h3>
 <p>0 = succes, alles anders = fout.</p>
-<div class="code-wrap"><pre><span class="f">ls</span> /bestaat-niet
+<div class="cw"><pre><span class="f">ls</span> /bestaat-niet
 <span class="k">echo</span> $?           <span class="c"># exitcode vorige commando</span>
 
 <span class="k">if</span> <span class="f">ping</span> -c 1 8.8.8.8 &gt;/dev/null 2&gt;&amp;1; <span class="k">then</span>
@@ -416,469 +339,352 @@ commando &gt; /dev/null 2&gt;&amp;1        <span class="c"># alles weggooien</sp
 <span class="k">else</span>
     <span class="k">echo</span> <span class="s">"Geen verbinding"</span>
 <span class="k">fi</span>
-
-<span class="k">exit</span> 0    <span class="c"># succes</span>
-<span class="k">exit</span> 1    <span class="c"># fout</span></pre><button class="copy-btn">copy</button></div>
+<span class="k">exit</span> 0  <span class="c"># succes</span>
+<span class="k">exit</span> 1  <span class="c"># fout</span></pre><button class="cp">copy</button></div>
 <table><tr><th>Operator</th><th>Uitleg</th></tr>
 <tr><td>cmd1 &amp;&amp; cmd2</td><td>cmd2 alleen als cmd1 slaagde</td></tr>
 <tr><td>cmd1 || cmd2</td><td>cmd2 alleen als cmd1 faalde</td></tr>
 <tr><td>$?</td><td>Exitcode van het laatste commando</td></tr></table>
 </div>
-<div class="subsection"><h3>Veelgemaakte fouten</h3>
-<div class="tip warn">Geen spaties rond =: naam="x" is correct, naam = "x" geeft een fout</div>
-<div class="tip warn">Vergeet "$var" niet te quoten — spaties in waarden breken commando's</div>
-<div class="tip warn">rm -rf zonder check? Voeg eerst een echo toe om te debuggen</div>
-</div>
-</section>
+<div class="sub"><h3>Veelgemaakte fouten</h3>
+<div class="tip w">Geen spaties rond =: naam="x" correct, naam = "x" geeft fout</div>
+<div class="tip w">Vergeet "$var" niet te quoten — spaties breken commando's</div>
+</div></div>
 
 <!-- POWERSHELL -->
 
-<section data-id="ps-basics" data-lang="ps" data-title="Basics &amp; Uitvoeren">
-<div class="subsection"><h3>Script uitvoeren</h3>
-<div class="code-wrap"><pre><span class="c"># Execution policy instellen (eenmalig, als admin)</span>
-<span class="f">Set-ExecutionPolicy</span> RemoteSigned
-
+<div class="sec" id="ps-basics" data-lang="ps" data-title="Basics &amp; Uitvoeren">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Basics &amp; Uitvoeren</h2></div>
+<div class="sub"><h3>Script uitvoeren</h3>
+<div class="cw"><pre><span class="f">Set-ExecutionPolicy</span> RemoteSigned  <span class="c"># eenmalig als admin</span>
 .\script.ps1
-<span class="f">powershell</span> -File script.ps1</pre><button class="copy-btn">copy</button></div>
-<div class="tip ps-tip">PowerShell heeft aliassen: ls, cd, cat, echo werken ook.</div>
+<span class="f">powershell</span> -File script.ps1</pre><button class="cp">copy</button></div>
+<div class="tip p">PowerShell aliassen: ls, cd, cat, echo werken ook.</div>
 </div>
-<div class="subsection"><h3>Basis cmdlets</h3>
+<div class="sub"><h3>Basis cmdlets</h3>
 <table><tr><th>Cmdlet</th><th>Uitleg</th></tr>
 <tr><td>Get-Help cmdlet</td><td>Hulp tonen</td></tr>
 <tr><td>Get-Command *tekst*</td><td>Cmdlets zoeken</td></tr>
 <tr><td>Clear-Host</td><td>Terminal leegmaken</td></tr>
 <tr><td>$PSVersionTable</td><td>PowerShell versie</td></tr>
-<tr><td>Get-Location</td><td>Huidig pad (= pwd)</td></tr>
-<tr><td>Set-Location C:\</td><td>Navigeren (= cd)</td></tr></table>
-</div>
-</section>
+<tr><td>Get-Location</td><td>Huidig pad</td></tr>
+<tr><td>Set-Location C:\</td><td>Navigeren</td></tr></table>
+</div></div>
 
-<section data-id="ps-variabelen" data-lang="ps" data-title="Variabelen &amp; Types">
-<div class="subsection"><h3>Declareren &amp; types</h3>
-<p>Variabelen beginnen altijd met $, zowel bij toekennen als uitlezen.</p>
-<div class="code-wrap"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
+<div class="sec" id="ps-var" data-lang="ps" data-title="Variabelen &amp; Types">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Variabelen &amp; Types</h2></div>
+<div class="sub"><h3>Declareren</h3>
+<div class="cw"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
 <span class="v">$leeftijd</span> = 20
 <span class="v">$actief</span> = <span class="k">$true</span>
 [int]<span class="v">$getal</span> = <span class="s">"42"</span>
-[string]<span class="v">$tekst</span> = 100</pre><button class="copy-btn">copy</button></div>
+[string]<span class="v">$tekst</span> = 100</pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Strings</h3>
-<div class="code-wrap"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
+<div class="sub"><h3>Strings</h3>
+<div class="cw"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
 <span class="f">Write-Host</span> <span class="s">"Hallo $naam"</span>       <span class="c"># Hallo Gunther</span>
 <span class="f">Write-Host</span> <span class="s">'Hallo $naam'</span>       <span class="c"># Hallo $naam (letterlijk)</span>
-<span class="f">Write-Host</span> <span class="s">"2 + 2 = $(2+2)"</span>    <span class="c"># expressie in string</span></pre><button class="copy-btn">copy</button></div>
+<span class="f">Write-Host</span> <span class="s">"2+2=$(2+2)"</span>        <span class="c"># expressie in string</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Arrays &amp; Hashtables</h3>
-<div class="code-wrap"><pre><span class="v">$kleuren</span> = @(<span class="s">"rood"</span>, <span class="s">"groen"</span>, <span class="s">"blauw"</span>)
-<span class="f">Write-Host</span> <span class="v">$kleuren</span>[0]        <span class="c"># rood</span>
-<span class="f">Write-Host</span> <span class="v">$kleuren</span>.Count      <span class="c"># 3</span>
+<div class="sub"><h3>Arrays &amp; Hashtables</h3>
+<div class="cw"><pre><span class="v">$kleuren</span> = @(<span class="s">"rood"</span>, <span class="s">"groen"</span>, <span class="s">"blauw"</span>)
+<span class="f">Write-Host</span> <span class="v">$kleuren</span>[0]      <span class="c"># rood</span>
+<span class="f">Write-Host</span> <span class="v">$kleuren</span>.Count   <span class="c"># 3</span>
 
-<span class="v">$persoon</span> = @{
-    Naam = <span class="s">"Gunther"</span>
-    Leeftijd = 20
-}
-<span class="f">Write-Host</span> <span class="v">$persoon</span>.Naam</pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="v">$persoon</span> = @{ Naam = <span class="s">"Gunther"</span>; Leeftijd = 20 }
+<span class="f">Write-Host</span> <span class="v">$persoon</span>.Naam</pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-input-output" data-lang="ps" data-title="Input &amp; Output">
-<div class="subsection"><h3>Output</h3>
-<div class="code-wrap"><pre><span class="f">Write-Host</span> <span class="s">"Tekst tonen"</span>
+<div class="sec" id="ps-io" data-lang="ps" data-title="Input &amp; Output">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Input &amp; Output</h2></div>
+<div class="sub"><h3>Output</h3>
+<div class="cw"><pre><span class="f">Write-Host</span> <span class="s">"Tekst"</span>
 <span class="f">Write-Host</span> <span class="s">"Rood!"</span> -ForegroundColor Red
 <span class="f">Write-Output</span> <span class="s">"Via pipeline"</span>
 <span class="f">Write-Error</span> <span class="s">"Foutmelding"</span>
-<span class="f">Write-Warning</span> <span class="s">"Waarschuwing"</span></pre><button class="copy-btn">copy</button></div>
-<table><tr><th>Cmdlet</th><th>Uitleg</th></tr>
-<tr><td>Write-Host</td><td>Toont op scherm (niet in pipeline)</td></tr>
-<tr><td>Write-Output</td><td>Stuurt naar pipeline</td></tr>
-<tr><td>Write-Error</td><td>Foutmelding</td></tr>
-<tr><td>Write-Warning</td><td>Waarschuwing (geel)</td></tr></table>
+<span class="f">Write-Warning</span> <span class="s">"Waarschuwing"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Input</h3>
-<div class="code-wrap"><pre><span class="v">$naam</span> = <span class="f">Read-Host</span> <span class="s">"Wat is je naam"</span>
-<span class="v">$ww</span>   = <span class="f">Read-Host</span> <span class="s">"Wachtwoord"</span> -AsSecureString</pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<div class="sub"><h3>Input</h3>
+<div class="cw"><pre><span class="v">$naam</span> = <span class="f">Read-Host</span> <span class="s">"Wat is je naam"</span>
+<span class="v">$ww</span>   = <span class="f">Read-Host</span> <span class="s">"Wachtwoord"</span> -AsSecureString</pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-conditionals" data-lang="ps" data-title="Conditionals">
-<div class="subsection"><h3>if / elseif / else</h3>
-<div class="code-wrap"><pre><span class="k">if</span> (<span class="v">$score</span> -ge 50) {
+<div class="sec" id="ps-cond" data-lang="ps" data-title="Conditionals">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Conditionals</h2></div>
+<div class="sub"><h3>if / elseif / else</h3>
+<div class="cw"><pre><span class="k">if</span> (<span class="v">$score</span> -ge 50) {
     <span class="f">Write-Host</span> <span class="s">"Geslaagd"</span>
 } <span class="k">elseif</span> (<span class="v">$score</span> -ge 30) {
     <span class="f">Write-Host</span> <span class="s">"Bijna"</span>
 } <span class="k">else</span> {
     <span class="f">Write-Host</span> <span class="s">"Niet geslaagd"</span>
-}</pre><button class="copy-btn">copy</button></div>
+}</pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Vergelijkingsoperatoren</h3>
+<div class="sub"><h3>Operatoren</h3>
 <table><tr><th>Operator</th><th>Betekenis</th></tr>
 <tr><td>-eq</td><td>Gelijk aan</td></tr>
-<tr><td>-ne</td><td>Niet gelijk aan</td></tr>
-<tr><td>-lt</td><td>Kleiner dan</td></tr>
-<tr><td>-gt</td><td>Groter dan</td></tr>
-<tr><td>-le</td><td>Kleiner of gelijk</td></tr>
-<tr><td>-ge</td><td>Groter of gelijk</td></tr>
-<tr><td>-like "*.txt"</td><td>Wildcard vergelijking</td></tr>
-<tr><td>-match "regex"</td><td>Regex vergelijking</td></tr>
-<tr><td>-and</td><td>Logische EN</td></tr>
-<tr><td>-or</td><td>Logische OF</td></tr>
-<tr><td>-not / !</td><td>Logische NIET</td></tr></table>
+<tr><td>-ne</td><td>Niet gelijk</td></tr>
+<tr><td>-lt / -gt</td><td>Kleiner / groter dan</td></tr>
+<tr><td>-le / -ge</td><td>Kleiner of gelijk / groter of gelijk</td></tr>
+<tr><td>-like "*.txt"</td><td>Wildcard</td></tr>
+<tr><td>-match "regex"</td><td>Regex</td></tr>
+<tr><td>-and / -or / -not</td><td>Logisch EN / OF / NIET</td></tr></table>
 </div>
-<div class="subsection"><h3>switch statement</h3>
-<div class="code-wrap"><pre><span class="k">switch</span> (<span class="v">$dag</span>) {
-    <span class="s">"maandag"</span>  { <span class="f">Write-Host</span> <span class="s">"Start van de week"</span> }
-    <span class="s">"vrijdag"</span>  { <span class="f">Write-Host</span> <span class="s">"Weekend bijna!"</span> }
-    default    { <span class="f">Write-Host</span> <span class="s">"Gewone dag"</span> }
-}</pre><button class="copy-btn">copy</button></div>
+<div class="sub"><h3>switch</h3>
+<div class="cw"><pre><span class="k">switch</span> (<span class="v">$dag</span>) {
+    <span class="s">"maandag"</span> { <span class="f">Write-Host</span> <span class="s">"Start week"</span> }
+    <span class="s">"vrijdag"</span> { <span class="f">Write-Host</span> <span class="s">"Weekend!"</span> }
+    default   { <span class="f">Write-Host</span> <span class="s">"Gewone dag"</span> }
+}</pre><button class="cp">copy</button></div>
+</div></div>
+
+<div class="sec" id="ps-loops" data-lang="ps" data-title="Loops">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Loops</h2></div>
+<div class="sub"><h3>for / foreach / while</h3>
+<div class="cw"><pre><span class="k">for</span> (<span class="v">$i</span>=1; <span class="v">$i</span> -le 5; <span class="v">$i</span>++) { <span class="f">Write-Host</span> <span class="v">$i</span> }
+
+<span class="v">$namen</span> = @(<span class="s">"Alice"</span>, <span class="s">"Bob"</span>)
+<span class="k">foreach</span> (<span class="v">$n</span> <span class="k">in</span> <span class="v">$namen</span>) { <span class="f">Write-Host</span> <span class="s">"Hallo $n"</span> }
+
+<span class="v">$t</span>=0; <span class="k">while</span> (<span class="v">$t</span> -lt 3) { <span class="f">Write-Host</span> <span class="v">$t</span>; <span class="v">$t</span>++ }</pre><button class="cp">copy</button></div>
 </div>
-</section>
+<div class="sub"><h3>ForEach-Object</h3>
+<div class="cw"><pre>1..5 | <span class="f">ForEach-Object</span> { <span class="f">Write-Host</span> "Item: $_" }
+1..5 | % { <span class="f">Write-Host</span> $_ }   <span class="c"># korte notatie</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-loops" data-lang="ps" data-title="Loops">
-<div class="subsection"><h3>for / foreach / while</h3>
-<div class="code-wrap"><pre><span class="k">for</span> (<span class="v">$i</span> = 1; <span class="v">$i</span> -le 5; <span class="v">$i</span>++) {
-    <span class="f">Write-Host</span> <span class="s">"Ronde $i"</span>
-}
-
-<span class="v">$namen</span> = @(<span class="s">"Alice"</span>, <span class="s">"Bob"</span>, <span class="s">"Charlie"</span>)
-<span class="k">foreach</span> (<span class="v">$naam</span> <span class="k">in</span> <span class="v">$namen</span>) {
-    <span class="f">Write-Host</span> <span class="s">"Hallo $naam"</span>
-}
-
-<span class="v">$teller</span> = 0
-<span class="k">while</span> (<span class="v">$teller</span> -lt 3) {
-    <span class="f">Write-Host</span> <span class="v">$teller</span>
-    <span class="v">$teller</span>++
-}</pre><button class="copy-btn">copy</button></div>
-</div>
-<div class="subsection"><h3>ForEach-Object (pipeline)</h3>
-<div class="code-wrap"><pre>1..5 | <span class="f">ForEach-Object</span> {
-    <span class="f">Write-Host</span> <span class="s">"Item: $_"</span>
-}
-1..5 | % { <span class="f">Write-Host</span> $_ }   <span class="c"># korte notatie</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
-
-<section data-id="ps-functies" data-lang="ps" data-title="Functies">
-<div class="subsection"><h3>Basis functie</h3>
-<div class="code-wrap"><pre><span class="k">function</span> <span class="f">Begroet</span>(<span class="v">$naam</span>) {
+<div class="sec" id="ps-func" data-lang="ps" data-title="Functies">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Functies</h2></div>
+<div class="sub"><h3>Basis</h3>
+<div class="cw"><pre><span class="k">function</span> <span class="f">Begroet</span>(<span class="v">$naam</span>) {
     <span class="f">Write-Host</span> <span class="s">"Hallo, $naam!"</span>
 }
-<span class="f">Begroet</span> <span class="s">"Gunther"</span></pre><button class="copy-btn">copy</button></div>
+<span class="f">Begroet</span> <span class="s">"Gunther"</span></pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Functie met param-blok &amp; return</h3>
-<div class="code-wrap"><pre><span class="k">function</span> <span class="f">Optellen</span> {
-    <span class="k">param</span>(
-        [int]<span class="v">$a</span>,
-        [int]<span class="v">$b</span>
-    )
+<div class="sub"><h3>param-blok &amp; return</h3>
+<div class="cw"><pre><span class="k">function</span> <span class="f">Optellen</span> {
+    <span class="k">param</span>([int]<span class="v">$a</span>, [int]<span class="v">$b</span>)
     <span class="k">return</span> <span class="v">$a</span> + <span class="v">$b</span>
 }
 <span class="v">$som</span> = <span class="f">Optellen</span> 3 5
-<span class="f">Write-Host</span> <span class="s">"Som: $som"</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="f">Write-Host</span> <span class="s">"Som: $som"</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-bestanden" data-lang="ps" data-title="Bestanden &amp; Mappen">
-<div class="subsection"><h3>Cmdlets overzicht</h3>
+<div class="sec" id="ps-files" data-lang="ps" data-title="Bestanden &amp; Mappen">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Bestanden &amp; Mappen</h2></div>
+<div class="sub"><h3>Cmdlets</h3>
 <table><tr><th>Cmdlet</th><th>Uitleg</th></tr>
-<tr><td>Get-ChildItem (ls)</td><td>Inhoud van map</td></tr>
+<tr><td>Get-ChildItem</td><td>Inhoud van map</td></tr>
 <tr><td>Get-Content bestand</td><td>Inhoud lezen</td></tr>
-<tr><td>Set-Content bestand</td><td>Inhoud schrijven (overschrijft)</td></tr>
-<tr><td>Add-Content bestand</td><td>Inhoud toevoegen</td></tr>
+<tr><td>Set-Content bestand</td><td>Schrijven (overschrijft)</td></tr>
+<tr><td>Add-Content bestand</td><td>Toevoegen (append)</td></tr>
 <tr><td>New-Item -ItemType File</td><td>Nieuw bestand</td></tr>
 <tr><td>New-Item -ItemType Directory</td><td>Nieuwe map</td></tr>
-<tr><td>Remove-Item bestand</td><td>Verwijderen</td></tr>
+<tr><td>Remove-Item</td><td>Verwijderen</td></tr>
 <tr><td>Copy-Item bron doel</td><td>Kopiëren</td></tr>
 <tr><td>Move-Item oud nieuw</td><td>Verplaatsen/hernoemen</td></tr>
-<tr><td>Test-Path pad</td><td>Bestaat het pad? (True/False)</td></tr></table>
+<tr><td>Test-Path pad</td><td>Bestaat? (True/False)</td></tr></table>
 </div>
-<div class="subsection"><h3>Bestand testen &amp; aanmaken</h3>
-<div class="code-wrap"><pre><span class="k">if</span> (<span class="f">Test-Path</span> <span class="s">"C:\log.txt"</span>) {
-    <span class="f">Write-Host</span> <span class="s">"Bestand bestaat"</span>
+<div class="sub"><h3>Test &amp; aanmaken</h3>
+<div class="cw"><pre><span class="k">if</span> (<span class="f">Test-Path</span> <span class="s">"C:\log.txt"</span>) {
+    <span class="f">Write-Host</span> <span class="s">"Bestaat"</span>
 } <span class="k">else</span> {
     <span class="f">New-Item</span> <span class="s">"C:\log.txt"</span> -ItemType File
-}</pre><button class="copy-btn">copy</button></div>
+}</pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>CSV werken</h3>
-<div class="code-wrap"><pre><span class="f">Get-Process</span> | <span class="f">Export-Csv</span> <span class="s">"processen.csv"</span> -NoTypeInformation
-<span class="v">$data</span> = <span class="f">Import-Csv</span> <span class="s">"processen.csv"</span>
-<span class="v">$data</span> | <span class="f">ForEach-Object</span> { <span class="f">Write-Host</span> $_.Name }</pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<div class="sub"><h3>CSV</h3>
+<div class="cw"><pre><span class="f">Get-Process</span> | <span class="f">Export-Csv</span> <span class="s">"proc.csv"</span> -NoTypeInformation
+<span class="v">$data</span> = <span class="f">Import-Csv</span> <span class="s">"proc.csv"</span>
+<span class="v">$data</span> | <span class="f">ForEach-Object</span> { <span class="f">Write-Host</span> $_.Name }</pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-pipeline" data-lang="ps" data-title="Pipeline &amp; Filtering">
-<div class="subsection"><h3>Pipeline werkt met objecten</h3>
-<div class="code-wrap"><pre><span class="f">Get-Process</span> | <span class="f">Where-Object</span> { $_.CPU -gt 10 }
+<div class="sec" id="ps-pipe" data-lang="ps" data-title="Pipeline &amp; Filtering">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Pipeline &amp; Filtering</h2></div>
+<div class="sub"><h3>Pipeline met objecten</h3>
+<div class="cw"><pre><span class="f">Get-Process</span> | <span class="f">Where-Object</span> { $_.CPU -gt 10 }
 <span class="f">Get-Service</span> | <span class="f">Sort-Object</span> Name
 <span class="f">Get-Process</span> | <span class="f">Select-Object</span> Name, CPU, Id
 <span class="f">Get-ChildItem</span> | <span class="f">Select-Object</span> -First 5
 <span class="f">Get-Service</span> | <span class="f">Measure-Object</span>
-<span class="f">Get-Content</span> log.txt | <span class="f">Select-String</span> <span class="s">"fout"</span></pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="f">Get-Content</span> log.txt | <span class="f">Select-String</span> <span class="s">"fout"</span></pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-objecten" data-lang="ps" data-title="Objecten &amp; Properties">
-<div class="subsection"><h3>Objecten inspecteren</h3>
-<div class="code-wrap"><pre><span class="f">Get-Process</span> notepad | <span class="f">Get-Member</span>
-
-<span class="v">$proc</span> = <span class="f">Get-Process</span> notepad
-<span class="f">Write-Host</span> <span class="v">$proc</span>.Id
-<span class="f">Write-Host</span> <span class="v">$proc</span>.Name
-<span class="f">Write-Host</span> <span class="v">$proc</span>.CPU</pre><button class="copy-btn">copy</button></div>
+<div class="sec" id="ps-obj" data-lang="ps" data-title="Objecten &amp; Services">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Objecten &amp; Services</h2></div>
+<div class="sub"><h3>Objecten inspecteren</h3>
+<div class="cw"><pre><span class="f">Get-Process</span> notepad | <span class="f">Get-Member</span>
+<span class="v">$p</span> = <span class="f">Get-Process</span> notepad
+<span class="f">Write-Host</span> <span class="v">$p</span>.Id, <span class="v">$p</span>.Name, <span class="v">$p</span>.CPU</pre><button class="cp">copy</button></div>
 </div>
-<div class="subsection"><h3>Services beheren</h3>
-<div class="code-wrap"><pre><span class="f">Get-Service</span> -Name <span class="s">"Spooler"</span>
+<div class="sub"><h3>Services</h3>
+<div class="cw"><pre><span class="f">Get-Service</span> -Name <span class="s">"Spooler"</span>
 <span class="f">Start-Service</span> -Name <span class="s">"Spooler"</span>
 <span class="f">Stop-Service</span> -Name <span class="s">"Spooler"</span>
 <span class="f">Restart-Service</span> -Name <span class="s">"Spooler"</span>
-<span class="f">Set-Service</span> -Name <span class="s">"Spooler"</span> -StartupType Automatic</pre><button class="copy-btn">copy</button></div>
-</div>
-</section>
+<span class="f">Set-Service</span> -Name <span class="s">"Spooler"</span> -StartupType Automatic</pre><button class="cp">copy</button></div>
+</div></div>
 
-<section data-id="ps-errors" data-lang="ps" data-title="Foutafhandeling">
-<div class="subsection"><h3>try / catch / finally</h3>
-<div class="code-wrap"><pre><span class="k">try</span> {
+<div class="sec" id="ps-err" data-lang="ps" data-title="Foutafhandeling">
+<div class="sh"><span class="badge ps">PowerShell</span><h2 class="st">Foutafhandeling</h2></div>
+<div class="sub"><h3>try / catch / finally</h3>
+<div class="cw"><pre><span class="k">try</span> {
     <span class="f">Get-Content</span> <span class="s">"bestaat-niet.txt"</span> -ErrorAction Stop
-    <span class="f">Write-Host</span> <span class="s">"Bestand gelezen"</span>
-}
-<span class="k">catch</span> {
-    <span class="f">Write-Host</span> <span class="s">"Fout: $($_.Exception.Message)"</span>
-}
-<span class="k">finally</span> {
-    <span class="f">Write-Host</span> <span class="s">"Wordt altijd uitgevoerd"</span>
-}</pre><button class="copy-btn">copy</button></div>
+} <span class="k">catch</span> {
+    <span class="f">Write-Host</span> "Fout: $($_.Exception.Message)"
+} <span class="k">finally</span> {
+    <span class="f">Write-Host</span> <span class="s">"Altijd uitgevoerd"</span>
+}</pre><button class="cp">copy</button></div>
 <table><tr><th>Parameter</th><th>Uitleg</th></tr>
-<tr><td>-ErrorAction Stop</td><td>Fout wordt exception (nodig voor try/catch)</td></tr>
+<tr><td>-ErrorAction Stop</td><td>Fout wordt exception (nodig voor catch)</td></tr>
 <tr><td>-ErrorAction SilentlyContinue</td><td>Fout negeren</td></tr>
-<tr><td>$Error[0]</td><td>Laatste fout opvragen</td></tr>
-<tr><td>$?</td><td>True/False: was laatste commando OK?</td></tr></table>
+<tr><td>$Error[0]</td><td>Laatste fout</td></tr>
+<tr><td>$?</td><td>Was laatste commando OK?</td></tr></table>
 </div>
-<div class="subsection"><h3>Veelgemaakte fouten</h3>
-<div class="tip ps-tip">-ErrorAction Stop is vereist anders vangt try/catch niets op!</div>
-<div class="tip ps-tip">Execution policy blokkeert scripts? Set-ExecutionPolicy RemoteSigned als admin</div>
-<div class="tip ps-tip">Write-Host vs Write-Output: Host toont op scherm maar gaat niet in de pipeline</div>
-</div>
-</section>
+<div class="sub"><h3>Tips</h3>
+<div class="tip p">-ErrorAction Stop is vereist, anders vangt catch niets op!</div>
+<div class="tip p">Write-Host gaat niet in de pipeline, gebruik Write-Output daarvoor</div>
+</div></div>
 
 <!-- VERGELIJKING -->
 
-<section data-id="vergelijking" data-lang="compare" data-title="Bash vs PowerShell">
-<div class="subsection"><h3>Variabelen</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="v">naam</span>=<span class="s">"Gunther"</span>
-<span class="k">echo</span> <span class="s">"$naam"</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
-<span class="f">Write-Host</span> <span class="v">$naam</span></pre><button class="copy-btn">copy</button></div></div>
+<div class="sec" id="vergelijking" data-lang="cmp" data-title="Bash vs PowerShell">
+<div class="sh"><span class="badge cmp">Vergelijking</span><h2 class="st">Bash vs PowerShell</h2></div>
+<div class="sub"><h3>Variabelen</h3>
+<div class="cg">
+<div><div class="cl bash">Bash</div>
+<div class="cw"><pre><span class="v">naam</span>=<span class="s">"Gunther"</span>
+<span class="k">echo</span> "$naam"</pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell</div>
+<div class="cw"><pre><span class="v">$naam</span> = <span class="s">"Gunther"</span>
+<span class="f">Write-Host</span> <span class="v">$naam</span></pre><button class="cp">copy</button></div></div>
 </div></div>
-
-<div class="subsection"><h3>if statement</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="k">if</span> [ $x -gt 10 ]; <span class="k">then</span>
+<div class="sub"><h3>if statement</h3>
+<div class="cg">
+<div><div class="cl bash">Bash</div>
+<div class="cw"><pre><span class="k">if</span> [ $x -gt 10 ]; <span class="k">then</span>
     <span class="k">echo</span> <span class="s">"groot"</span>
-<span class="k">fi</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="k">if</span> (<span class="v">$x</span> -gt 10) {
+<span class="k">fi</span></pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell</div>
+<div class="cw"><pre><span class="k">if</span> (<span class="v">$x</span> -gt 10) {
     <span class="f">Write-Host</span> <span class="s">"groot"</span>
-}</pre><button class="copy-btn">copy</button></div></div>
+}</pre><button class="cp">copy</button></div></div>
 </div></div>
-
-<div class="subsection"><h3>for loop</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="k">for</span> i <span class="k">in</span> 1 2 3; <span class="k">do</span>
+<div class="sub"><h3>for loop</h3>
+<div class="cg">
+<div><div class="cl bash">Bash</div>
+<div class="cw"><pre><span class="k">for</span> i <span class="k">in</span> 1 2 3; <span class="k">do</span>
     <span class="k">echo</span> $i
-<span class="k">done</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="k">foreach</span> (<span class="v">$i</span> <span class="k">in</span> 1..3) {
+<span class="k">done</span></pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell</div>
+<div class="cw"><pre><span class="k">foreach</span> (<span class="v">$i</span> <span class="k">in</span> 1..3) {
     <span class="f">Write-Host</span> <span class="v">$i</span>
-}</pre><button class="copy-btn">copy</button></div></div>
+}</pre><button class="cp">copy</button></div></div>
 </div></div>
-
-<div class="subsection"><h3>Bestand lezen &amp; filteren</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="f">cat</span> bestand.txt
-<span class="f">cat</span> log.txt | <span class="f">grep</span> <span class="s">"fout"</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="f">Get-Content</span> bestand.txt
-<span class="f">Get-Content</span> log.txt | <span class="f">Select-String</span> <span class="s">"fout"</span></pre><button class="copy-btn">copy</button></div></div>
+<div class="sub"><h3>Bestand lezen &amp; filteren</h3>
+<div class="cg">
+<div><div class="cl bash">Bash</div>
+<div class="cw"><pre><span class="f">cat</span> bestand.txt
+<span class="f">grep</span> <span class="s">"fout"</span> log.txt</pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell</div>
+<div class="cw"><pre><span class="f">Get-Content</span> bestand.txt
+<span class="f">Get-Content</span> log.txt | <span class="f">Select-String</span> <span class="s">"fout"</span></pre><button class="cp">copy</button></div></div>
 </div></div>
-
-<div class="subsection"><h3>Functies</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="f">groet</span>() {
-    <span class="k">echo</span> <span class="s">"Hallo $1"</span>
-}
-<span class="f">groet</span> <span class="s">"Wereld"</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="k">function</span> <span class="f">Groet</span>(<span class="v">$naam</span>) {
-    <span class="f">Write-Host</span> <span class="s">"Hallo $naam"</span>
-}
-<span class="f">Groet</span> <span class="s">"Wereld"</span></pre><button class="copy-btn">copy</button></div></div>
+<div class="sub"><h3>Pipeline</h3>
+<div class="cg">
+<div><div class="cl bash">Bash — tekst</div>
+<div class="cw"><pre><span class="f">ps</span> aux | <span class="f">grep</span> nginx | <span class="f">awk</span> '{print $2}'</pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell — objecten</div>
+<div class="cw"><pre><span class="f">Get-Process</span> nginx | <span class="f">Select-Object</span> Id</pre><button class="cp">copy</button></div></div>
 </div></div>
-
-<div class="subsection"><h3>Pipeline: tekst vs objecten</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash — tekst-gebaseerd</div>
-<div class="code-wrap"><pre><span class="f">ps</span> aux | <span class="f">grep</span> nginx | <span class="f">awk</span> <span class="s">'{print $2}'</span>
-<span class="c"># Werkt met ruwe tekst, parsing nodig</span></pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell — object-gebaseerd</div>
-<div class="code-wrap"><pre><span class="f">Get-Process</span> nginx | <span class="f">Select-Object</span> Id
-<span class="c"># .Id is een echte property</span></pre><button class="copy-btn">copy</button></div></div>
+<div class="sub"><h3>Foutafhandeling</h3>
+<div class="cg">
+<div><div class="cl bash">Bash</div>
+<div class="cw"><pre>commando || <span class="k">exit</span> 1
+<span class="k">echo</span> "Code: $?"</pre><button class="cp">copy</button></div></div>
+<div><div class="cl ps">PowerShell</div>
+<div class="cw"><pre><span class="k">try</span> { cmd -ErrorAction Stop }
+<span class="k">catch</span> { <span class="f">Write-Host</span> $_.Exception.Message }</pre><button class="cp">copy</button></div></div>
 </div></div>
+</div>
 
-<div class="subsection"><h3>Foutafhandeling</h3>
-<div class="compare-grid">
-<div><div class="compare-col-label bash">Bash</div>
-<div class="code-wrap"><pre><span class="k">if</span> ! commando; <span class="k">then</span>
-    <span class="k">echo</span> <span class="s">"Fout: $?"</span>
-<span class="k">fi</span>
-commando || <span class="k">exit</span> 1</pre><button class="copy-btn">copy</button></div></div>
-<div><div class="compare-col-label ps">PowerShell</div>
-<div class="code-wrap"><pre><span class="k">try</span> {
-    cmdlet -ErrorAction Stop
-} <span class="k">catch</span> {
-    <span class="f">Write-Host</span> $_.Exception.Message
-}</pre><button class="copy-btn">copy</button></div></div>
-</div></div>
-</section>
-
-</div><!-- end section-data -->
+</main>
 
 <script>
-var sectionMeta = [];
-var langLabels = { bash: 'Bash', ps: 'PowerShell', compare: 'Vergelijking' };
-var langOrder = ['bash', 'ps', 'compare'];
-var currentTab = 'all';
+var LANGS = { bash:'Bash', ps:'PowerShell', cmp:'Vergelijking' };
+var ORDER = ['bash','ps','cmp'];
+var cur = 'all';
 
-function init() {
-  var templates = document.querySelectorAll('#section-data section');
-  templates.forEach(function(el) {
-    sectionMeta.push({
-      id: el.getAttribute('data-id'),
-      lang: el.getAttribute('data-lang'),
-      title: el.getAttribute('data-title'),
-      html: el.innerHTML
-    });
-  });
-  buildNav('all');
-  buildContent('all');
-  attachTabButtons();
-  attachSearch();
+function getSections() {
+  return Array.from(document.querySelectorAll('#main .sec'));
 }
 
 function buildNav(filter) {
-  var nav = document.getElementById('nav-links');
+  var nav = document.getElementById('nav');
   nav.innerHTML = '';
-  var langs = filter === 'all' ? langOrder : (filter === 'compare' ? ['compare'] : [filter]);
+  var langs = filter === 'all' ? ORDER : (filter === 'cmp' ? ['cmp'] : [filter]);
   langs.forEach(function(lang) {
-    var wrap = document.createElement('div');
-    wrap.className = 'nav-section';
-    var lbl = document.createElement('div');
-    lbl.className = 'nav-label';
-    lbl.textContent = langLabels[lang];
-    wrap.appendChild(lbl);
-    sectionMeta.filter(function(s) { return s.lang === lang; }).forEach(function(sec) {
+    var g = document.createElement('div'); g.className = 'ng';
+    var lbl = document.createElement('div'); lbl.className = 'nl'; lbl.textContent = LANGS[lang];
+    g.appendChild(lbl);
+    getSections().filter(function(s){ return s.getAttribute('data-lang')===lang; }).forEach(function(s) {
       var a = document.createElement('div');
-      a.className = 'nav-link';
-      a.setAttribute('data-lang', lang);
-      a.setAttribute('data-target', sec.id);
-      a.textContent = sec.title.replace(/&amp;/g,'&');
-      a.addEventListener('click', function() {
-        var el = document.getElementById(sec.id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      });
-      wrap.appendChild(a);
+      a.className = 'na'; a.setAttribute('data-l', lang); a.setAttribute('data-t', s.id);
+      a.textContent = s.getAttribute('data-title').replace(/&amp;/g,'&');
+      a.onclick = function(){ s.scrollIntoView({behavior:'smooth'}); };
+      g.appendChild(a);
     });
-    nav.appendChild(wrap);
+    nav.appendChild(g);
   });
 }
 
-function buildContent(filter) {
-  var container = document.getElementById('content');
-  container.innerHTML = '';
-  var filtered = filter === 'all' ? sectionMeta : sectionMeta.filter(function(s) { return s.lang === filter; });
-  filtered.forEach(function(sec) {
-    var div = document.createElement('div');
-    div.className = 'section';
-    div.id = sec.id;
-    div.innerHTML =
-      '<div class="section-header">' +
-      '<span class="lang-badge ' + sec.lang + '">' + langLabels[sec.lang] + '</span>' +
-      '<h2 class="section-title">' + sec.title.replace(/&amp;/g,'&') + '</h2>' +
-      '</div>' + sec.html;
-    container.appendChild(div);
+function filterSections(filter, q) {
+  getSections().forEach(function(s) {
+    var langOk = filter==='all' || s.getAttribute('data-lang')===filter;
+    var qOk = !q || s.textContent.toLowerCase().indexOf(q)!==-1;
+    s.style.display = (langOk && qOk) ? '' : 'none';
   });
-  attachCopyBtns();
 }
 
-function attachCopyBtns() {
-  document.querySelectorAll('.copy-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
+function attachCopy() {
+  document.querySelectorAll('.cp').forEach(function(btn) {
+    btn.onclick = function() {
       var pre = btn.previousElementSibling;
-      var text = pre ? pre.innerText : '';
-      navigator.clipboard.writeText(text).then(function() {
-        btn.textContent = 'gekopieerd!';
-        btn.classList.add('copied');
-        setTimeout(function() { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+      navigator.clipboard.writeText(pre ? pre.innerText : '').then(function() {
+        btn.textContent='gekopieerd!'; btn.classList.add('ok');
+        setTimeout(function(){ btn.textContent='copy'; btn.classList.remove('ok'); }, 1500);
       });
-    });
+    };
   });
 }
 
-function attachTabButtons() {
-  document.querySelectorAll('.tab-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      currentTab = btn.getAttribute('data-tab');
-      document.getElementById('search').value = '';
-      buildNav(currentTab);
-      buildContent(currentTab);
-      document.getElementById('no-results').classList.add('hidden');
-    });
-  });
-}
+document.querySelectorAll('.tb').forEach(function(btn) {
+  btn.onclick = function() {
+    document.querySelectorAll('.tb').forEach(function(b){ b.classList.remove('on'); });
+    btn.classList.add('on');
+    cur = btn.getAttribute('data-t');
+    document.getElementById('srch').value = '';
+    buildNav(cur);
+    filterSections(cur, '');
+  };
+});
 
-function attachSearch() {
-  document.getElementById('search').addEventListener('input', function() {
-    var q = this.value.trim().toLowerCase();
-    if (!q) {
-      buildContent(currentTab);
-      document.getElementById('no-results').classList.add('hidden');
-      return;
-    }
-    var filtered = sectionMeta.filter(function(s) {
-      if (currentTab !== 'all' && s.lang !== currentTab) return false;
-      return s.title.toLowerCase().indexOf(q) !== -1 || s.html.toLowerCase().indexOf(q) !== -1;
-    });
-    var container = document.getElementById('content');
-    container.innerHTML = '';
-    if (filtered.length === 0) {
-      document.getElementById('no-results').classList.remove('hidden');
-    } else {
-      document.getElementById('no-results').classList.add('hidden');
-      filtered.forEach(function(sec) {
-        var div = document.createElement('div');
-        div.className = 'section';
-        div.id = sec.id;
-        div.innerHTML =
-          '<div class="section-header">' +
-          '<span class="lang-badge ' + sec.lang + '">' + langLabels[sec.lang] + '</span>' +
-          '<h2 class="section-title">' + sec.title.replace(/&amp;/g,'&') + '</h2>' +
-          '</div>' + sec.html;
-        container.appendChild(div);
-      });
-      attachCopyBtns();
-    }
-  });
-}
+document.getElementById('srch').oninput = function() {
+  filterSections(cur, this.value.trim().toLowerCase());
+};
 
-window.addEventListener('DOMContentLoaded', init);
+window.onscroll = function() {
+  var active = null;
+  getSections().forEach(function(s) {
+    if (s.style.display==='none') return;
+    if (s.getBoundingClientRect().top <= 80) active = s.id;
+  });
+  document.querySelectorAll('.na').forEach(function(a) {
+    a.classList.toggle('on', a.getAttribute('data-t')===active);
+  });
+};
+
+buildNav('all');
+attachCopy();
 </script>
 </body>
 </html>
