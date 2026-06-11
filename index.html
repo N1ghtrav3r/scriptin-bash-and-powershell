@@ -148,8 +148,10 @@ tr:hover td{background:rgba(255,255,255,.02)}
 <div class="sub"><h3>Output</h3>
 <div class="cw"><pre><span class="k">echo</span> <span class="s">"Gewone tekst"</span>
 <span class="k">echo</span> -n <span class="s">"Zonder newline"</span>
-<span class="k">echo</span> -e <span class="s">"Lijn 1\nLijn 2"</span>
-<span class="f">printf</span> <span class="s">"Naam: %s\n"</span> <span class="s">"Ali"</span></pre><button class="cp">copy</button></div>
+<span class="k">echo</span> -e <span class="s">"Lijn 1
+Lijn 2"</span>
+<span class="f">printf</span> <span class="s">"Naam: %s
+"</span> <span class="s">"Ali"</span></pre><button class="cp">copy</button></div>
 </div>
 <div class="sub"><h3>Input lezen</h3>
 <div class="cw"><pre><span class="k">read</span> antwoord
@@ -351,6 +353,193 @@ commando &gt; /dev/null 2&gt;&amp;1</pre><button class="cp">copy</button></div>
 <div class="tip w">Vergeet "$var" niet te quoten — spaties breken commando's</div>
 </div></div>
 
+
+<!-- PRAKTIJKVOORBEELDEN & THEORIE -->
+
+<div class="sec" id="bash-theorie-read" data-lang="bash" data-title="Theorie: read opties">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Theorie: read opties</h2></div>
+<div class="sub"><h3>Wat doet read?</h3>
+<p>Met <code>read</code> vraag je de gebruiker om iets in te typen. Wat de gebruiker typt wordt opgeslagen in een variabele.</p>
+<table><tr><th>Optie</th><th>Betekenis</th><th>Voorbeeld</th></tr>
+<tr><td>-p "tekst"</td><td>Toont een prompt (tekst) voor de invoer. Staat voor <em>prompt</em>.</td><td>read -p "Naam? " naam</td></tr>
+<tr><td>-s</td><td>Maakt de invoer onzichtbaar (verborgen). Staat voor <em>silent</em>. Gebruik je voor wachtwoorden.</td><td>read -s -p "Wachtwoord: " ww</td></tr>
+<tr><td>-t 10</td><td>Geeft de gebruiker 10 seconden om iets in te typen. Daarna gaat het script verder.</td><td>read -t 10 -p "Snel! " keuze</td></tr>
+<tr><td>-n 4</td><td>Stopt automatisch na 4 tekens invoer.</td><td>read -n 4 -p "PIN: " pin</td></tr>
+<tr><td>-r</td><td>Behandelt backslash als gewone tekst (raw mode).</td><td>read -r -p "Pad: " pad</td></tr>
+</table>
+<div class="tip">Na een <code>read -s</code> staat de cursor nog op dezelfde lijn. Zet altijd een lege <code>echo</code> erna voor een nieuwe lijn!</div>
+<div class="cw"><pre><span class="k">read</span> -p <span class="s">"Naam? "</span> naam          <span class="c"># toont "Naam? " en wacht</span>
+<span class="k">read</span> -s -p <span class="s">"Wachtwoord: "</span> ww  <span class="c"># invoer onzichtbaar</span>
+<span class="k">echo</span>                          <span class="c"># nieuwe lijn na -s</span></pre><button class="cp">copy</button></div>
+</div></div>
+
+<div class="sec" id="bash-theorie-if" data-lang="bash" data-title="Theorie: if / elif / else">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Theorie: if / elif / else</h2></div>
+<div class="sub"><h3>Wat is een if-structuur?</h3>
+<p>Een if-structuur laat je script een beslissing nemen. "Als dit waar is, doe dan dat. Anders doe iets anders."</p>
+<table><tr><th>Onderdeel</th><th>Betekenis</th></tr>
+<tr><td>if [ ... ]; then</td><td>Start de controle. Als de voorwaarde waar is, wordt alles tot elif/else/fi uitgevoerd.</td></tr>
+<tr><td>elif [ ... ]; then</td><td>Optioneel. Een tweede controle als de eerste niet waar was. Kan je meerdere keren gebruiken.</td></tr>
+<tr><td>else</td><td>Optioneel. Wordt uitgevoerd als geen enkele voorwaarde hierboven waar was.</td></tr>
+<tr><td>fi</td><td>Sluit het if-blok af. Verplicht! (fi = if achterstevoren)</td></tr>
+</table>
+<div class="tip w">Spaties in [ ] zijn verplicht! <code>[ "$x" = "y" ]</code> is correct. <code>["$x"="y"]</code> geeft een fout.</div>
+<div class="cw"><pre><span class="k">if</span> [ <span class="s">"$score"</span> -ge 50 ]; <span class="k">then</span>
+    <span class="k">echo</span> <span class="s">"Geslaagd"</span>
+<span class="k">elif</span> [ <span class="s">"$score"</span> -ge 30 ]; <span class="k">then</span>
+    <span class="k">echo</span> <span class="s">"Bijna"</span>
+<span class="k">else</span>
+    <span class="k">echo</span> <span class="s">"Niet geslaagd"</span>
+<span class="k">fi</span></pre><button class="cp">copy</button></div>
+<div class="sub"><h3>Twee voorwaarden tegelijk (-a en -o)</h3>
+<p>Met <code>-a</code> (AND) controleer je of twee dingen tegelijk waar zijn. Met <code>-o</code> (OR) of minstens één waar is.</p>
+<div class="cw"><pre><span class="k">if</span> [ <span class="s">"$user"</span> = <span class="s">"admin"</span> -a <span class="s">"$ww"</span> = <span class="s">"1234"</span> ]; <span class="k">then</span>
+    <span class="k">echo</span> <span class="s">"Beide correct!"</span>
+<span class="k">fi</span></pre><button class="cp">copy</button></div>
+</div></div></div>
+
+<div class="sec" id="bash-theorie-loops" data-lang="bash" data-title="Theorie: while &amp; for loops">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Theorie: while &amp; for loops</h2></div>
+<div class="sub"><h3>while loop</h3>
+<p>Een while loop herhaalt een blok code zolang een voorwaarde waar is. Zodra de voorwaarde niet meer waar is, stopt de loop.</p>
+<table><tr><th>Onderdeel</th><th>Betekenis</th></tr>
+<tr><td>while [ voorwaarde ]; do</td><td>Zolang de voorwaarde waar is, blijf herhalen.</td></tr>
+<tr><td>while true; do</td><td>Eeuwige loop — blijft herhalen totdat jij hem stopt met break.</td></tr>
+<tr><td>break</td><td>Stopt de loop onmiddellijk, ook al is de voorwaarde nog waar.</td></tr>
+<tr><td>done</td><td>Sluit het while-blok af. Verplicht!</td></tr>
+</table>
+<div class="cw"><pre><span class="v">teller</span>=0
+<span class="k">while</span> [ <span class="v">$teller</span> -lt 5 ]; <span class="k">do</span>
+    <span class="k">echo</span> <span class="s">"Teller: $teller"</span>
+    (( teller++ ))
+<span class="k">done</span>
+
+<span class="c"># Eeuwige loop met break</span>
+<span class="k">while true</span>; <span class="k">do</span>
+    <span class="k">read</span> -p <span class="s">"Doorgaan? (j/n) "</span> keuze
+    [ <span class="s">"$keuze"</span> = <span class="s">"n"</span> ] &amp;&amp; <span class="k">break</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+</div>
+<div class="sub"><h3>for loop</h3>
+<p>Een for loop herhaalt een blok code voor elk item in een lijst, of een bepaald aantal keren.</p>
+<table><tr><th>Vorm</th><th>Wanneer gebruiken</th></tr>
+<tr><td>for item in lijst; do</td><td>Als je een vaste lijst hebt om door te lopen.</td></tr>
+<tr><td>for (( i=1; i&lt;=5; i++ )); do</td><td>Als je een teller nodig hebt (zoals in C).</td></tr>
+</table>
+<div class="cw"><pre><span class="c"># Over een lijst</span>
+<span class="k">for</span> fruit <span class="k">in</span> appel peer banaan; <span class="k">do</span>
+    <span class="k">echo</span> <span class="s">"$fruit"</span>
+<span class="k">done</span>
+
+<span class="c"># Met teller</span>
+<span class="k">for</span> (( i=1; i&lt;=5; i++ )); <span class="k">do</span>
+    <span class="k">echo</span> <span class="s">"Ronde $i"</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+</div></div>
+
+<div class="sec" id="bash-theorie-functies" data-lang="bash" data-title="Theorie: Functies">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Theorie: Functies</h2></div>
+<div class="sub"><h3>Wat is een functie?</h3>
+<p>Een functie is een stukje code met een naam dat je meerdere keren kan aanroepen. Zo vermijd je herhaling in je script.</p>
+<table><tr><th>Onderdeel</th><th>Betekenis</th></tr>
+<tr><td>naam() { ... }</td><td>Definieert de functie. De code erin wordt pas uitgevoerd als je de functie aanroept.</td></tr>
+<tr><td>naam "argument"</td><td>Roept de functie aan. Argumenten geef je mee na de naam.</td></tr>
+<tr><td>$1, $2, ...</td><td>Binnen de functie: de meegegeven argumenten.</td></tr>
+<tr><td>return 0 / return 1</td><td>Geeft een exitcode terug (0 = succes, 1 = fout). Geen echte returnwaarde!</td></tr>
+</table>
+<div class="tip">Functies moet je definiëren <strong>voor</strong> je ze aanroept in het script.</div>
+<div class="cw"><pre><span class="f">begroet</span>() {
+    <span class="k">echo</span> <span class="s">"Hallo, $1!"</span>   <span class="c"># $1 = eerste argument</span>
+}
+<span class="f">begroet</span> <span class="s">"Gunther"</span>       <span class="c"># output: Hallo, Gunther!</span></pre><button class="cp">copy</button></div>
+</div></div>
+
+<div class="sec" id="bash-theorie-arrays" data-lang="bash" data-title="Theorie: Arrays">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Theorie: Arrays</h2></div>
+<div class="sub"><h3>Wat is een array?</h3>
+<p>Een array is een variabele die meerdere waarden tegelijk kan bevatten. Elke waarde heeft een positienummer (index), startend vanaf 0.</p>
+<table><tr><th>Syntax</th><th>Betekenis</th></tr>
+<tr><td>naam=("a" "b" "c")</td><td>Array aanmaken met 3 elementen.</td></tr>
+<tr><td>${naam[0]}</td><td>Eerste element opvragen (index 0).</td></tr>
+<tr><td>${naam[@]}</td><td>Alle elementen opvragen.</td></tr>
+<tr><td>${#naam[@]}</td><td>Aantal elementen in de array.</td></tr>
+<tr><td>naam+=("d")</td><td>Element toevoegen aan de array.</td></tr>
+</table>
+<div class="cw"><pre><span class="v">kleuren</span>=(<span class="s">"rood"</span> <span class="s">"groen"</span> <span class="s">"blauw"</span>)
+<span class="k">echo</span> "${kleuren[0]}"    <span class="c"># rood</span>
+<span class="k">echo</span> "${kleuren[@]}"    <span class="c"># rood groen blauw</span>
+<span class="k">echo</span> "${#kleuren[@]}"   <span class="c"># 3</span>
+<span class="v">kleuren</span>+=(<span class="s">"geel"</span>)       <span class="c"># geel toevoegen</span>
+
+<span class="k">for</span> kleur <span class="k">in</span> "${kleuren[@]}"; <span class="k">do</span>
+    <span class="k">echo</span> <span class="s">"$kleur"</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+</div></div>
+
+<div class="sec" id="bash-praktijk" data-lang="bash" data-title="Praktijkvoorbeelden">
+<div class="sh"><span class="badge bash">Bash</span><h2 class="st">Praktijkvoorbeelden</h2></div>
+
+<div class="sub"><h3>Voorbeeld 1: Wachtwoord bevestigen</h3>
+<p>Vraag de gebruiker een wachtwoord in te voeren en bevestigen. Blijf vragen zolang ze niet overeenkomen.</p>
+<div class="cw"><pre><span class="c">#!/bin/bash</span>
+<span class="c"># Gebruiker om wachtwoord vragen + bevestiging</span>
+
+<span class="k">while true</span>; <span class="k">do</span>
+    <span class="k">read</span> -s -p <span class="s">"Wachtwoord: "</span> ww1
+    <span class="k">echo</span>
+    <span class="k">read</span> -s -p <span class="s">"Bevestig wachtwoord: "</span> ww2
+    <span class="k">echo</span>
+
+    <span class="k">if</span> [ <span class="s">"$ww1"</span> = <span class="s">"$ww2"</span> ]; <span class="k">then</span>
+        <span class="k">echo</span> <span class="s">"Wachtwoord ingesteld!"</span>
+        <span class="k">break</span>
+    <span class="k">else</span>
+        <span class="k">echo</span> <span class="s">"Wachtwoorden komen niet overeen, probeer opnieuw."</span>
+    <span class="k">fi</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+<p>Stap voor stap uitgelegd:</p>
+<table><tr><th>Lijn</th><th>Uitleg</th></tr>
+<tr><td>#!/bin/bash</td><td>Shebang: gebruik Bash als interpreter.</td></tr>
+<tr><td>while true; do</td><td>Start een eeuwige loop. Blijft herhalen totdat break uitgevoerd wordt.</td></tr>
+<tr><td>read -s -p "..." ww1</td><td>Vraag invoer (-p toont tekst, -s maakt het onzichtbaar). Sla op in ww1.</td></tr>
+<tr><td>echo</td><td>Nieuwe lijn na de verborgen invoer, anders staat alles op één lijn.</td></tr>
+<tr><td>if [ "$ww1" = "$ww2" ]; then</td><td>Vergelijk de twee strings. = voor strings, niet -eq (dat is voor getallen).</td></tr>
+<tr><td>break</td><td>Stop de while loop zodra het wachtwoord correct bevestigd is.</td></tr>
+<tr><td>fi</td><td>Sluit het if-blok af.</td></tr>
+<tr><td>done</td><td>Sluit het while-blok af. Loop herstart als break niet bereikt werd.</td></tr>
+</table>
+</div>
+
+<div class="sub"><h3>Voorbeeld 2: Login simulatie</h3>
+<p>Simuleer een login met een vaste gebruikersnaam en wachtwoord. Beide moeten correct zijn.</p>
+<div class="cw"><pre><span class="c">#!/bin/bash</span>
+<span class="c"># Vaste logingegevens bovenaan definiëren</span>
+<span class="v">correcte_gebruikersnaam</span>=<span class="s">"admin"</span>
+<span class="v">correcte_wachtwoord</span>=<span class="s">"1234"</span>
+
+<span class="k">while true</span>; <span class="k">do</span>
+    <span class="k">read</span> -p <span class="s">"Gebruikersnaam: "</span> gebruiker
+    <span class="k">read</span> -s -p <span class="s">"Wachtwoord: "</span> wachtwoord
+    <span class="k">echo</span>
+
+    <span class="k">if</span> [ <span class="s">"$gebruiker"</span> = <span class="s">"$correcte_gebruikersnaam"</span> -a <span class="s">"$wachtwoord"</span> = <span class="s">"$correcte_wachtwoord"</span> ]; <span class="k">then</span>
+        <span class="k">echo</span> <span class="s">"Welkom!"</span>
+        <span class="k">break</span>
+    <span class="k">else</span>
+        <span class="k">echo</span> <span class="s">"Ongeldige inloggegevens, probeer opnieuw."</span>
+    <span class="k">fi</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+<p>Stap voor stap uitgelegd:</p>
+<table><tr><th>Lijn</th><th>Uitleg</th></tr>
+<tr><td>correcte_gebruikersnaam="admin"</td><td>Sla de correcte waarden op als variabele bovenaan het script.</td></tr>
+<tr><td>read -p "..." gebruiker</td><td>Gebruikersnaam is zichtbaar (-p zonder -s).</td></tr>
+<tr><td>read -s -p "..." wachtwoord</td><td>Wachtwoord is verborgen (-s).</td></tr>
+<tr><td>-a</td><td>AND operator: beide voorwaarden moeten tegelijk waar zijn.</td></tr>
+<tr><td>"$gebruiker" = "$correcte_gebruikersnaam"</td><td>Vergelijk ingevoerde waarde met de vaste variabele.</td></tr>
+</table>
+</div>
+
+</div>
 <!-- POWERSHELL -->
 
 <div class="sec" id="ps-basics" data-lang="ps" data-title="Basics &amp; Uitvoeren">
