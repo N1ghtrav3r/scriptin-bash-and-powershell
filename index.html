@@ -537,6 +537,41 @@ commando &gt; /dev/null 2&gt;&amp;1</pre><button class="cp">copy</button></div>
 <tr><td>-a</td><td>AND operator: beide voorwaarden moeten tegelijk waar zijn.</td></tr>
 <tr><td>"$gebruiker" = "$correcte_gebruikersnaam"</td><td>Vergelijk ingevoerde waarde met de vaste variabele.</td></tr>
 </table>
+
+<div class="sub"><h3>Voorbeeld 3: Getal raden</h3>
+<p>Raad een vast getal. Het script geeft aan of je gok te hoog of te laag was, en telt je pogingen.</p>
+<div class="cw"><pre><span class="c">#!/bin/bash</span>
+<span class="v">correct_getal</span>=<span class="s">"42"</span>
+<span class="v">teller</span>=0
+
+<span class="k">while true</span>; <span class="k">do</span>
+    <span class="k">read</span> -p <span class="s">"Geef een getal in: "</span> getal
+    (( teller++ ))
+
+    <span class="k">if</span> [ <span class="s">"$getal"</span> -eq <span class="s">"$correct_getal"</span> ]; <span class="k">then</span>
+        <span class="k">echo</span> <span class="s">"Juist! Je had $teller pogingen nodig."</span>
+        <span class="k">break</span>
+    <span class="k">elif</span> [ <span class="s">"$getal"</span> -gt <span class="s">"$correct_getal"</span> ]; <span class="k">then</span>
+        <span class="k">echo</span> <span class="s">"Te hoog!"</span>
+    <span class="k">else</span>
+        <span class="k">echo</span> <span class="s">"Te laag!"</span>
+    <span class="k">fi</span>
+<span class="k">done</span></pre><button class="cp">copy</button></div>
+<p>Stap voor stap uitgelegd:</p>
+<table><tr><th>Lijn</th><th>Uitleg</th></tr>
+<tr><td>correct_getal="42"</td><td>Het te raden getal, bovenaan als variabele zodat je het makkelijk kan aanpassen.</td></tr>
+<tr><td>teller=0</td><td>Start de teller op 0. Elke poging verhogen we die met 1.</td></tr>
+<tr><td>while true; do</td><td>Eeuwige loop — blijft vragen totdat de gebruiker het juiste getal raadt.</td></tr>
+<tr><td>read -p "..." getal</td><td>Vraag een getal aan de gebruiker en sla het op in de variabele getal.</td></tr>
+<tr><td>(( teller++ ))</td><td>Verhoog de teller met 1 bij elke poging. Staat vóór de if zodat ook de eerste poging meegeteld wordt.</td></tr>
+<tr><td>-eq</td><td>Vergelijkt twee getallen op gelijkheid. Gebruik altijd -eq voor getallen, niet = (dat is voor strings).</td></tr>
+<tr><td>-gt</td><td>Groter dan (greater than). Als getal groter is dan correct_getal → Te hoog.</td></tr>
+<tr><td>else</td><td>Als geen van de bovenstaande voorwaarden waar is, moet het getal te laag zijn.</td></tr>
+<tr><td>echo "... $teller ..."</td><td>Toont de variabele teller in de boodschap bij een juist antwoord.</td></tr>
+<tr><td>break</td><td>Stopt de while loop zodra het juiste getal geraden is.</td></tr>
+</table>
+</div>
+
 </div>
 
 </div>
